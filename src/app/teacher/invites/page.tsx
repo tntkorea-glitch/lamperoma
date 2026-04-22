@@ -2,6 +2,16 @@ import { requireTeacher } from "@/lib/auth/getUser";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
+type Invite = {
+  id: string;
+  token: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  expires_at: string;
+  used_at: string | null;
+};
+
 export default async function InvitesPage() {
   const { teacherId } = await requireTeacher();
   const supabase = await createSupabaseServerClient();
