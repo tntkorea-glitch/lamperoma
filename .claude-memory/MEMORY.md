@@ -1,0 +1,2 @@
+- [User profile](user_profile.md) — 한국어 사용자, tntkorea-glitch GitHub, 프로젝트 셋업은 /new 스킬로 자동화
+- [Project init](project_init.md) — 2026-04-23 신규 생성, Next.js 16 + Tailwind 4 + TS, 개발 포트 3011 고정
