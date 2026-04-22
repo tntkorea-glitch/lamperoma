@@ -1,6 +1,6 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadLessonImagesAction } from "@/lib/storage/upload";
 import { useState, useTransition } from "react";
 import { publishLessonLogAction, saveLessonLogAction } from "./actions";
 
