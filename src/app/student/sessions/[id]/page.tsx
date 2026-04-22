@@ -16,7 +16,7 @@ export default async function StudentSessionPage({
 
   const { data: session } = await supabase
     .from("course_sessions")
-    .select("id, session_no, course:courses(title, total_sessions)")
+    .select("id, session_no, scheduled_at, course:courses(title, total_sessions)")
     .eq("id", sessionId)
     .maybeSingle();
 
