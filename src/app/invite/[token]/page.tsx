@@ -51,11 +51,8 @@ export default async function InviteLandingPage({
   }
 
   // 이미 로그인 되어 있으면 accept로 바로
-  const supabase = createSupabaseAdminClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) redirect(`/invite/${token}/accept`);
+  const session = await auth();
+  if (session?.user?.id) redirect(`/invite/${token}/accept`);
 
   const teacher = Array.isArray(invite.teachers) ? invite.teachers[0] : invite.teachers;
 
