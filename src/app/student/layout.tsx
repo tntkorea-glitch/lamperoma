@@ -13,10 +13,11 @@ export default async function StudentLayout({ children }: { children: ReactNode 
           <Link href="/student" className="text-lg font-bold tracking-tight">
             Lamperoma <span className="text-xs font-normal text-gray-400">수강</span>
           </Link>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-3 text-sm">
             <Link href="/student/settings" className="text-gray-700 hover:text-gray-900">
               설정
             </Link>
+            <NotificationBell />
             <form action="/auth/signout" method="post">
               <button className="text-gray-400 hover:text-gray-900">로그아웃</button>
             </form>
