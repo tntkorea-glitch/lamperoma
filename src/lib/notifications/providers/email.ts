@@ -17,6 +17,9 @@ export const emailProvider: NotificationProvider = {
       };
     }
 
+    // 도메인 인증 전에는 Resend 테스트 주소 사용 가능
+    const from = process.env.EMAIL_FROM || "Lamperoma <onboarding@resend.dev>";
+
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -25,7 +28,7 @@ export const emailProvider: NotificationProvider = {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Lamperoma <noreply@lamperoma.app>",
+          from,
           to: [payload.email],
           subject: payload.title,
           html: buildHtml(payload),
