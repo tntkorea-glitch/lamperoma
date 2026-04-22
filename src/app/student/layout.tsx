@@ -12,9 +12,14 @@ export default async function StudentLayout({ children }: { children: ReactNode 
           <Link href="/student" className="text-lg font-bold tracking-tight">
             Lamperoma <span className="text-xs font-normal text-gray-400">수강</span>
           </Link>
-          <form action="/auth/signout" method="post">
-            <button className="text-sm text-gray-400 hover:text-gray-900">로그아웃</button>
-          </form>
+          <div className="flex items-center gap-4 text-sm">
+            <Link href="/student/settings" className="text-gray-700 hover:text-gray-900">
+              설정
+            </Link>
+            <form action="/auth/signout" method="post">
+              <button className="text-gray-400 hover:text-gray-900">로그아웃</button>
+            </form>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-6">{children}</main>
