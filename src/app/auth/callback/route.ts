@@ -6,14 +6,17 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/";
   const inviteToken = searchParams.get("invite");
+  const teacherInviteToken = searchParams.get("teacher_invite");
 
   if (code) {
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const target = inviteToken
-        ? `/invite/${inviteToken}/accept`
-        : next;
+      const target = teacherInviteToken
+        ? `/teacher-invite/${teacherInviteToken}/accept`
+        : inviteToken
+          ? `/invite/${inviteToken}/accept`
+          : next;
       return NextResponse.redirect(`${origin}${target}`);
     }
   }
