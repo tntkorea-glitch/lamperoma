@@ -55,10 +55,9 @@ export default async function AcceptInvitePage({
 
   if (existingStudent) {
     // 이미 다른 원장 학생이면 충돌. 일단은 link 갱신 허용 (원장 변경)
-    await admin
-      .from("students")
-      .update({ teacher_id: invite.teacher_id, name: invite.name ?? existingStudent })
-      .eq("id", user.id);
+    const updates: Record<string, string> = { teacher_id: invite.teacher_id };
+    if (invite.name) updates.name = invite.name;
+    await admin.from("students").update(updates).eq("id", user.id);
   } else {
     const { error } = await admin.from("students").insert({
       id: user.id,
