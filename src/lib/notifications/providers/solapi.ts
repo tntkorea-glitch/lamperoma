@@ -96,11 +96,9 @@ function buildText(payload: NotificationPayload): string {
 }
 
 function buildAuthHeader(apiKey: string, apiSecret: string): string {
-  // Solapi HMAC auth — 간단 구현
-  // 실제 배포 시엔 crypto HMAC-SHA256 사용 권장. 여기선 단순화.
+  // https://docs.solapi.com/authentication/authenticate-api
   const date = new Date().toISOString();
-  const salt = Math.random().toString(36).slice(2, 14);
-  const { createHmac } = require("crypto") as typeof import("crypto");
+  const salt = randomBytes(32).toString("hex");
   const signature = createHmac("sha256", apiSecret)
     .update(date + salt)
     .digest("hex");
