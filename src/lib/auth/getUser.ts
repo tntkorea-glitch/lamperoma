@@ -12,6 +12,12 @@ export async function getAuthedUser() {
   return { user, ...role };
 }
 
+export async function requireAdmin() {
+  const authed = await getAuthedUser();
+  if (authed.role !== "admin") redirect("/");
+  return authed;
+}
+
 export async function requireTeacher() {
   const authed = await getAuthedUser();
   if (authed.role !== "teacher") redirect("/");
