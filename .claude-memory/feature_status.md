@@ -21,11 +21,16 @@ originSessionId: 6cc64c39-d23f-473c-a27e-fa0de549ce20
 - **랜딩 페이지**: `/` 로그아웃 방문자용 (hero + 3역할 카드 + 초대 안내)
 
 ## 🟡 미완
-- **Resend 실발송**: API 키만 넣으면 동작 (도메인 인증 + `noreply@lamperoma.app` 교체 필요)
-- **Solapi 실발송**: 가입 + 사업자번호 + 발신번호 등록 + (선택) 알림톡 템플릿 승인
-- **배포**: Vercel 연결 안 됨. `vercel link` + env push + Google OAuth 프로덕션 redirect URI 추가 필요
+- **카카오 알림톡 승격**: Solapi 발신프로필(pfId) 등록 + 템플릿 3개(LESSON_LOG_PUBLISHED/TEACHER_COMMENT/STUDENT_COMMENT) 심사 승인 (1~2일). `SOLAPI_KAKAO_PFID` env 추가하면 자동 승격, SMS fallback 유지
+- **Resend 자체 도메인**: 현재 `onboarding@resend.dev` 사용 → 스팸함 가능성. Resend Domains 에서 도메인 인증 후 `EMAIL_FROM` env 세팅하면 교체됨
 - **실사용자 테스트**: 아직 실제 원장·수강생 투입 안 함
 - **세부 UX**: 일지 템플릿 `topics[]` 입력 UI 없음, 과정 전환 이력/로그 없음
+
+## ✅ 추가 완료 (2026-04-23 심야)
+- **A. Vercel 배포** — https://lamperoma.vercel.app (tntkorea-4169 계정)
+- **B. Resend 이메일 실발송** — API 키 주입 완료, 무료 플랜은 가입 이메일로만 발송 제약
+- **C. Solapi SMS 실발송** — postica 기존 계정 재사용 (API Key/Secret/Sender 공유), Node crypto HMAC 인증
+- **관리자 SMS 토글** — `/admin/settings`, `app_settings.sms_enabled` jsonb, 기본 OFF, 과금 방지
 
 **Why:** 4번 "운영 자잘한 것들" + 벨 UI 일괄 완료 (2026-04-23 심야). MVP 기능 완성도 95%로 배포 직전 상태.
 **How to apply:** 새 요청 들어오면 위 ✅ 목록 확인하고 중복 구현 피하기. 🟡 순서대로 처리하면 프로덕션 진입 가능.
