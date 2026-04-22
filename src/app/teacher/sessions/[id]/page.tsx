@@ -60,6 +60,27 @@ export default async function TeacherSessionPage({
         </h1>
       </div>
 
+      <form
+        action={updateSessionScheduleAction}
+        className="flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5"
+      >
+        <input type="hidden" name="session_id" value={sessionId} />
+        <label className="text-xs font-medium text-gray-700">수업 예정일</label>
+        <input
+          type="datetime-local"
+          name="scheduled_at"
+          defaultValue={
+            session.scheduled_at
+              ? new Date(session.scheduled_at).toISOString().slice(0, 16)
+              : ""
+          }
+          className="flex-1 rounded-md border border-gray-300 px-2 py-1 text-sm"
+        />
+        <button className="rounded-md border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">
+          저장
+        </button>
+      </form>
+
       <LessonLogEditor
         sessionId={sessionId}
         studentId={student?.id ?? ""}
