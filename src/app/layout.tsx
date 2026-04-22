@@ -32,7 +32,9 @@ export default function RootLayout({
       <head>
         <Script src="/inapp-guard.js" strategy="beforeInteractive" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   );
 }
