@@ -19,8 +19,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             <Link href="/admin" className="text-gray-700 hover:text-gray-900">
               대시보드
             </Link>
+            <Link href="/admin/users" className="text-gray-700 hover:text-gray-900">
+              사용자 관리
+            </Link>
             <Link href="/admin/teachers" className="text-gray-700 hover:text-gray-900">
-              원장 관리
+              원장
+            </Link>
+            <Link href="/admin/students" className="text-gray-700 hover:text-gray-900">
+              수강생
             </Link>
             <form action="/auth/signout" method="post">
               <button className="text-gray-400 hover:text-gray-900">로그아웃</button>
