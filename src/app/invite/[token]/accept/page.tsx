@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
@@ -7,12 +8,10 @@ export default async function AcceptInvitePage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const supabase = createSupabaseAdminClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await auth();
+  const user = session?.user;
 
-  if (!user) redirect(`/invite/${token}`);
+  if (!user?.id || !user.email) redirect(`/invite/${token}`);
 
   const admin = createSupabaseAdminClient();
 
@@ -30,7 +29,21 @@ export default async function AcceptInvitePage({
     return <Msg title="만료된 초대링크" body="새 링크를 요청해주세요." />;
   }
 
-  // 이미 teacher로 로그인된 사람이 수강생 초대를 수락하려고 하면 막기
+  // 관리자/원장 계정으로는 수강생 초대를 수락할 수 없음
+  const { data: isAdmin } = await admin
+    .from("admins")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (isAdmin) {
+    return (
+      <Msg
+        title="관리자 계정으로는 수락할 수 없습니다"
+        body="다른 구글 계정으로 다시 로그인해주세요."
+      />
+    );
+  }
+
   const { data: isTeacher } = await admin
     .from("teachers")
     .select("id")
@@ -53,7 +66,6 @@ export default async function AcceptInvitePage({
     .maybeSingle();
 
   if (existingStudent) {
-    // 이미 다른 원장 학생이면 충돌. 일단은 link 갱신 허용 (원장 변경)
     const updates: Record<string, string> = { teacher_id: invite.teacher_id };
     if (invite.name) updates.name = invite.name;
     await admin.from("students").update(updates).eq("id", user.id);
@@ -61,8 +73,8 @@ export default async function AcceptInvitePage({
     const { error } = await admin.from("students").insert({
       id: user.id,
       teacher_id: invite.teacher_id,
-      name: invite.name ?? user.user_metadata?.full_name ?? user.email!,
-      email: user.email!,
+      name: invite.name ?? user.name ?? user.email,
+      email: user.email,
       phone: invite.phone,
     });
     if (error) {
@@ -70,7 +82,6 @@ export default async function AcceptInvitePage({
     }
   }
 
-  // invite 사용 처리
   await admin
     .from("invites")
     .update({ used_at: new Date().toISOString(), used_by: user.id })
