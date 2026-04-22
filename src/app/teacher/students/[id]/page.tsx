@@ -1,0 +1,135 @@
+import { requireTeacher } from "@/lib/auth/getUser";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ensureCourseAction } from "./actions";
+
+export default async function StudentDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { teacherId } = await requireTeacher();
+  const { id } = await params;
+  const supabase = await createSupabaseServerClient();
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("*")
+    .eq("id", id)
+    .eq("teacher_id", teacherId!)
+    .maybeSingle();
+
+  if (!student) notFound();
+
+  const { data: courses } = await supabase
+    .from("courses")
+    .select("id, title, total_sessions, status, course_sessions(id, session_no, status, scheduled_at, lesson_logs(id, title, published_at))")
+    .eq("student_id", id)
+    .eq("teacher_id", teacherId!)
+    .order("created_at", { ascending: false });
+
+  const activeCourse = courses?.find((c) => c.status === "active") ?? courses?.[0];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Link href="/teacher" className="text-xs text-gray-500 hover:underline">
+          ← 대시보드
+        </Link>
+        <h1 className="mt-1 text-2xl font-bold">{student.name}</h1>
+        <p className="text-sm text-gray-500">
+          {student.email} {student.phone ? `· ${student.phone}` : ""}
+        </p>
+      </div>
+
+      {!activeCourse ? (
+        <form
+          action={ensureCourseAction}
+          className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+        >
+          <input type="hidden" name="student_id" value={student.id} />
+          <h2 className="mb-4 text-lg font-semibold">수강 과정 개설</h2>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-gray-700">과정명</span>
+              <input
+                name="title"
+                defaultValue="네일 아크릴 기본 과정"
+                required
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-xs font-medium text-gray-700">총 회차</span>
+              <input
+                name="total_sessions"
+                type="number"
+                defaultValue={10}
+                min={1}
+                max={50}
+                required
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </label>
+          </div>
+          <button className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white">
+            과정 만들기
+          </button>
+        </form>
+      ) : (
+        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">{activeCourse.title}</h2>
+            <span className="text-xs text-gray-500">
+              총 {activeCourse.total_sessions}회차
+            </span>
+          </div>
+
+          <ul className="space-y-2">
+            {[...Array(activeCourse.total_sessions)].map((_, idx) => {
+              const no = idx + 1;
+              const session = activeCourse.course_sessions?.find(
+                (s) => s.session_no === no,
+              );
+              const log = session?.lesson_logs as
+                | Array<{ id: string; title: string | null; published_at: string | null }>
+                | undefined;
+              const hasLog = log && log.length > 0;
+              const isPublished = hasLog && log[0]?.published_at;
+
+              return (
+                <li key={no}>
+                  <Link
+                    href={
+                      session
+                        ? `/teacher/sessions/${session.id}`
+                        : `/teacher/students/${student.id}/sessions/new?no=${no}&course_id=${activeCourse.id}`
+                    }
+                    className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 text-sm transition hover:border-gray-400"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold">
+                        {no}
+                      </span>
+                      <span className="font-medium">
+                        {log?.[0]?.title ?? `${no}회차 수업`}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {isPublished
+                        ? "✓ 일지 공개됨"
+                        : hasLog
+                          ? "임시저장"
+                          : "일지 작성 전"}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
