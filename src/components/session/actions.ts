@@ -1,7 +1,6 @@
 "use server";
 
 import { getAuthedUser } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { sendNotification } from "@/lib/notifications";
 
@@ -19,7 +18,7 @@ export async function addCommentAction(formData: FormData) {
   if (!body && images.length === 0) return;
   if (formRole !== role) throw new Error("role mismatch");
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { error } = await supabase.from("comments").insert({
     session_id: sessionId,
     author_id: user.id,

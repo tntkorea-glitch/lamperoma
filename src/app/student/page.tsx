@@ -1,10 +1,10 @@
 import { requireStudent } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 
 export default async function StudentDashboard() {
   const { studentId } = await requireStudent();
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   const { data: courses } = await supabase
     .from("courses")

@@ -1,5 +1,5 @@
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { CopyButton } from "./CopyButton";
@@ -11,7 +11,7 @@ export default async function InviteDetailPage({
 }) {
   const { teacherId } = await requireTeacher();
   const { token } = await params;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   const { data: invite } = await supabase
     .from("invites")

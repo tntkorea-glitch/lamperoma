@@ -1,7 +1,7 @@
 "use server";
 
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -11,7 +11,7 @@ export async function ensureCourseAction(formData: FormData) {
   const title = (formData.get("title") as string).trim();
   const totalSessions = Number(formData.get("total_sessions") ?? 10);
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("courses")
     .insert({

@@ -1,5 +1,5 @@
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ensureCourseAction } from "./actions";
@@ -11,7 +11,7 @@ export default async function StudentDetailPage({
 }) {
   const { teacherId } = await requireTeacher();
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   const { data: student } = await supabase
     .from("students")

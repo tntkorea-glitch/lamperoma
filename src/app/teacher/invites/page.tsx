@@ -1,5 +1,5 @@
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 
 type Invite = {
@@ -14,7 +14,7 @@ type Invite = {
 
 export default async function InvitesPage() {
   const { teacherId } = await requireTeacher();
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   const { data: invites } = await supabase
     .from("invites")

@@ -1,5 +1,5 @@
+import { auth } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function InviteLandingPage({
@@ -51,7 +51,7 @@ export default async function InviteLandingPage({
   }
 
   // 이미 로그인 되어 있으면 accept로 바로
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

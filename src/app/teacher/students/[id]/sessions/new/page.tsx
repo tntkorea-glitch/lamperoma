@@ -1,5 +1,5 @@
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
 export default async function CreateSessionPage({
@@ -14,7 +14,7 @@ export default async function CreateSessionPage({
   const { no, course_id: courseId } = await searchParams;
   if (!no || !courseId) redirect(`/teacher/students/${studentId}`);
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   // course 가 teacher 소유 + student 연결인지 검증 (RLS가 막긴 하지만 방어적으로)
   const { data: course } = await supabase

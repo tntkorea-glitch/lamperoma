@@ -1,5 +1,5 @@
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LessonLogEditor } from "./LessonLogEditor";
@@ -13,7 +13,7 @@ export default async function TeacherSessionPage({
   await requireTeacher();
   const { id: sessionId } = await params;
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   const { data: session } = await supabase
     .from("course_sessions")

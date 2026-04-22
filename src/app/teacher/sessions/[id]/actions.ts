@@ -1,7 +1,7 @@
 "use server";
 
 import { requireTeacher } from "@/lib/auth/getUser";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { sendNotification } from "@/lib/notifications";
 import { revalidatePath } from "next/cache";
 
@@ -18,7 +18,7 @@ async function upsertLog(
   const nextPrep = (formData.get("next_prep") as string).trim() || null;
   const images = JSON.parse((formData.get("images") as string) ?? "[]") as string[];
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const payload = {
     session_id: sessionId,
     title,
