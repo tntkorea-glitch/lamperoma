@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,9 @@ export default function RootLayout({
       <head>
         <Script src="/inapp-guard.js" strategy="beforeInteractive" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#f8fafc]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#f8fafc]">
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   );
 }
