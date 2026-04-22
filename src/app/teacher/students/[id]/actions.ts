@@ -28,6 +28,6 @@ export async function ensureCourseAction(formData: FormData) {
   if (error) throw error;
 
   revalidatePath(`/teacher/students/${studentId}`);
+  void data;
   redirect(`/teacher/students/${studentId}`);
-  return data;
 }
