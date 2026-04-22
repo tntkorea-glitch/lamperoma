@@ -1,4 +1,5 @@
 import { requireStudent } from "@/lib/auth/getUser";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
