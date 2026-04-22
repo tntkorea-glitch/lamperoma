@@ -50,6 +50,17 @@ export default async function StudentSessionPage({
             </span>
           )}
         </h1>
+        {session.scheduled_at && (
+          <p className="mt-1 text-xs text-gray-500">
+            수업 예정: {new Date(session.scheduled_at).toLocaleString("ko-KR", {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        )}
       </div>
 
       {!log ? (
