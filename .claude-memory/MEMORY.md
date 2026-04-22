@@ -3,3 +3,4 @@
 - [Auth setup](auth_setup.md) — Supabase Auth (Google OAuth), NextAuth에서 교체됨
 - [Domain model](domain_model.md) — 멀티테넌트 구조, Teacher/Student/Course/Session/LessonLog/Comment, RLS로 격리
 - [Notification layer](notification_layer.md) — 인앱+이메일(Resend)+Solapi(SMS/알림톡) 멀티프로바이더 아키텍처
+- [Feature status](feature_status.md) — 2026-04-23 구현 완료 범위 + 남은 TODO (알림 실발송·배포)
