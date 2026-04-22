@@ -1,14 +1,16 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { resolveRole } from "./bootstrap";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { resolveRole } from "./bootstrap";
 
 export async function getAuthedUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  const role = await resolveRole(user);
+  const session = await auth();
+  if (!session?.user?.id || !session.user.email) redirect("/login");
+  const user = {
+    id: session.user.id,
+    email: session.user.email,
+    name: session.user.name ?? null,
+  };
+  const role = await resolveRole(user.id, user.email, user.name);
   return { user, ...role };
 }
 
