@@ -19,6 +19,9 @@ export default async function TeacherLayout({ children }: { children: ReactNode 
             <Link href="/teacher/invites" className="text-gray-700 hover:text-gray-900">
               초대
             </Link>
+            <Link href="/teacher/settings" className="text-gray-700 hover:text-gray-900">
+              설정
+            </Link>
             <form action="/auth/signout" method="post">
               <button className="text-gray-400 hover:text-gray-900">로그아웃</button>
             </form>
