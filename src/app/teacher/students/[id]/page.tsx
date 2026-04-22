@@ -155,3 +155,14 @@ export default async function StudentDetailPage({
     </div>
   );
 }
+
+function StatusLabel({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    active: { label: "진행중", cls: "text-emerald-600" },
+    paused: { label: "일시중지", cls: "text-yellow-600" },
+    completed: { label: "완료", cls: "text-gray-500" },
+    cancelled: { label: "취소", cls: "text-red-500" },
+  };
+  const s = map[status] ?? { label: status, cls: "text-gray-500" };
+  return <span className={s.cls}>{s.label}</span>;
+}
