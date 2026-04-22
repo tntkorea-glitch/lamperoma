@@ -1,4 +1,5 @@
 import { createHmac, randomBytes } from "crypto";
+import { isSmsEnabled } from "@/lib/settings";
 import type {
   DeliveryResult,
   NotificationPayload,
