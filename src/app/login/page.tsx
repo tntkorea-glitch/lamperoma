@@ -8,6 +8,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/";
   const invite = searchParams.get("invite");
+  const teacherInvite = searchParams.get("teacher_invite");
   const error = searchParams.get("error");
   const [loading, setLoading] = useState(false);
 
@@ -17,6 +18,7 @@ function LoginForm() {
     const redirectTo = new URL("/auth/callback", window.location.origin);
     redirectTo.searchParams.set("next", next);
     if (invite) redirectTo.searchParams.set("invite", invite);
+    if (teacherInvite) redirectTo.searchParams.set("teacher_invite", teacherInvite);
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
