@@ -2,7 +2,7 @@ import { requireTeacher } from "@/lib/auth/getUser";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ensureCourseAction } from "./actions";
+import { ensureCourseAction, updateCourseStatusAction } from "./actions";
 
 export default async function StudentDetailPage({
   params,
