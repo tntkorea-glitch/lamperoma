@@ -25,6 +25,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             <Link href="/admin/teachers" className="text-gray-700 hover:text-gray-900">
               원장
             </Link>
+            <Link href="/admin/teachers/invites" className="text-gray-700 hover:text-gray-900">
+              원장 초대
+            </Link>
             <Link href="/admin/students" className="text-gray-700 hover:text-gray-900">
               수강생
             </Link>
