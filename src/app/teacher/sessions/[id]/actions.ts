@@ -49,6 +49,23 @@ export async function saveLessonLogAction(formData: FormData) {
   await upsertLog(formData, { publish: false });
 }
 
+export async function updateSessionScheduleAction(formData: FormData) {
+  await requireTeacher();
+  const sessionId = formData.get("session_id") as string;
+  const raw = (formData.get("scheduled_at") as string) || "";
+  const scheduledAt = raw ? new Date(raw).toISOString() : null;
+
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase
+    .from("course_sessions")
+    .update({ scheduled_at: scheduledAt })
+    .eq("id", sessionId);
+  if (error) throw error;
+
+  revalidatePath(`/teacher/sessions/${sessionId}`);
+  revalidatePath(`/student/sessions/${sessionId}`);
+}
+
 export async function publishLessonLogAction(formData: FormData) {
   await upsertLog(formData, { publish: true });
 
