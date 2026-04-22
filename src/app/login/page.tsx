@@ -1,12 +1,12 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/";
+  const nextParam = searchParams.get("next") ?? "/";
   const invite = searchParams.get("invite");
   const teacherInvite = searchParams.get("teacher_invite");
   const error = searchParams.get("error");
@@ -14,16 +14,12 @@ function LoginForm() {
 
   const handleGoogle = async () => {
     setLoading(true);
-    const supabase = createSupabaseBrowserClient();
-    const redirectTo = new URL("/auth/callback", window.location.origin);
-    redirectTo.searchParams.set("next", next);
-    if (invite) redirectTo.searchParams.set("invite", invite);
-    if (teacherInvite) redirectTo.searchParams.set("teacher_invite", teacherInvite);
-
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: redirectTo.toString() },
-    });
+    const callbackUrl = teacherInvite
+      ? `/teacher-invite/${teacherInvite}/accept`
+      : invite
+        ? `/invite/${invite}/accept`
+        : nextParam;
+    await signIn("google", { callbackUrl });
   };
 
   return (
