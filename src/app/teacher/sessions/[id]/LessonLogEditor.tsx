@@ -43,30 +43,17 @@ export function LessonLogEditor({
   const handleUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setUploading(true);
-    const supabase = createSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    try {
+      const fd = new FormData();
+      fd.set("session_id", sessionId);
+      for (const f of Array.from(files)) fd.append("files", f);
+      const urls = await uploadLessonImagesAction(fd);
+      setImages((prev) => [...prev, ...urls]);
+    } catch (err) {
+      setStatus(err instanceof Error ? `업로드 실패: ${err.message}` : "업로드 실패");
+    } finally {
       setUploading(false);
-      return;
     }
-
-    const urls: string[] = [];
-    for (const file of Array.from(files)) {
-      const path = `${user.id}/${sessionId}/${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage
-        .from("lesson-images")
-        .upload(path, file, { upsert: false });
-      if (error) {
-        setStatus(`이미지 업로드 실패: ${error.message}`);
-        continue;
-      }
-      const { data } = supabase.storage.from("lesson-images").getPublicUrl(path);
-      urls.push(data.publicUrl);
-    }
-    setImages((prev) => [...prev, ...urls]);
-    setUploading(false);
   };
 
   const handleSave = (publish: boolean) => {
