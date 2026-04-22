@@ -26,6 +26,16 @@ export function buildSmsProvider(): NotificationProvider {
       const sender = process.env.SOLAPI_SENDER;
       const pfId = process.env.SOLAPI_KAKAO_PFID;
 
+      // 관리자 전역 토글 (기본 false, /admin/settings 에서 변경)
+      if (!(await isSmsEnabled())) {
+        return {
+          channel: "sms",
+          delivered: false,
+          skipped: true,
+          reason: "SMS disabled by admin toggle",
+        };
+      }
+
       if (!apiKey || !apiSecret || !sender) {
         return {
           channel: "sms",
