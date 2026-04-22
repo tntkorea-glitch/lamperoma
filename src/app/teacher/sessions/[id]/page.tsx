@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LessonLogEditor } from "./LessonLogEditor";
 import { CommentThread } from "@/components/session/CommentThread";
+import { updateSessionScheduleAction } from "./actions";
 
 export default async function TeacherSessionPage({
   params,
