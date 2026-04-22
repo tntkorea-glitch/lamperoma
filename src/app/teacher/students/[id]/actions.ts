@@ -5,6 +5,30 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+const VALID_STATUS = new Set(["active", "paused", "completed", "cancelled"]);
+
+export async function updateCourseStatusAction(formData: FormData) {
+  const { teacherId } = await requireTeacher();
+  const courseId = formData.get("course_id") as string;
+  const status = formData.get("status") as string;
+  const studentId = formData.get("student_id") as string;
+
+  if (!VALID_STATUS.has(status)) throw new Error("잘못된 상태값");
+
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase
+    .from("courses")
+    .update({ status })
+    .eq("id", courseId)
+    .eq("teacher_id", teacherId!);
+
+  if (error) throw error;
+
+  revalidatePath(`/teacher/students/${studentId}`);
+  revalidatePath(`/teacher`);
+  revalidatePath(`/admin/courses`);
+}
+
 export async function ensureCourseAction(formData: FormData) {
   const { teacherId } = await requireTeacher();
   const studentId = formData.get("student_id") as string;
