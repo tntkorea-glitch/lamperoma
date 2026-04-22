@@ -32,18 +32,45 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">시스템 대시보드</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          전체 원장 / 수강생 / 수업 현황을 한눈에 확인
-        </p>
+      <div className="flex items-end justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">시스템 대시보드</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            전체 원장 / 수강생 / 수업 현황을 한눈에 확인
+          </p>
+        </div>
+        <Link
+          href="/admin/teachers/invites/new"
+          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+        >
+          + 원장 초대하기
+        </Link>
       </div>
 
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="원장" value={teacherCount ?? 0} accent="text-violet-600" />
-        <Stat label="수강생" value={studentCount ?? 0} accent="text-blue-600" />
-        <Stat label="진행 중 과정" value={activeCourseCount ?? 0} accent="text-emerald-600" />
-        <Stat label="작성된 일지" value={publishedLogCount ?? 0} accent="text-amber-600" />
+        <Stat
+          label="원장"
+          value={teacherCount ?? 0}
+          accent="text-violet-600"
+          href="/admin/teachers"
+        />
+        <Stat
+          label="수강생"
+          value={studentCount ?? 0}
+          accent="text-blue-600"
+          href="/admin/students"
+        />
+        <Stat
+          label="진행 중 과정"
+          value={activeCourseCount ?? 0}
+          accent="text-emerald-600"
+          href="/admin/courses"
+        />
+        <Stat
+          label="작성된 일지"
+          value={publishedLogCount ?? 0}
+          accent="text-amber-600"
+        />
       </section>
 
       <section>
@@ -60,6 +87,13 @@ export default async function AdminDashboard() {
           {!recentTeachers || recentTeachers.length === 0 ? (
             <div className="p-10 text-center text-sm text-gray-400">
               아직 가입한 원장이 없어요
+              <br />
+              <Link
+                href="/admin/teachers/invites/new"
+                className="mt-3 inline-block rounded-lg bg-gray-900 px-4 py-2 text-xs font-semibold text-white"
+              >
+                첫 원장 초대하기
+              </Link>
             </div>
           ) : (
             <ul className="divide-y divide-gray-100">
@@ -98,15 +132,29 @@ function Stat({
   label,
   value,
   accent,
+  href,
 }: {
   label: string;
   value: number;
   accent: string;
+  href?: string;
 }) {
-  return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+  const inner = (
+    <>
       <p className="text-xs font-medium text-gray-500">{label}</p>
       <p className={`mt-1 text-3xl font-bold ${accent}`}>{value.toLocaleString()}</p>
-    </div>
+    </>
   );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="block rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition hover:ring-gray-300"
+      >
+        {inner}
+      </Link>
+    );
+  }
+  return <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">{inner}</div>;
 }
