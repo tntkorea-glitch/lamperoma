@@ -1,6 +1,7 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { uploadLessonImagesAction } from "@/lib/storage/upload";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { addCommentAction } from "./actions";
 
@@ -22,63 +23,30 @@ export function CommentThread({
   role: "teacher" | "student";
   initialComments: Comment[];
 }) {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const router = useRouter();
   const [body, setBody] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const endRef = useRef<HTMLDivElement>(null);
 
-  // Realtime subscription
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    const channel = supabase
-      .channel(`comments:${sessionId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "comments",
-          filter: `session_id=eq.${sessionId}`,
-        },
-        (p) => {
-          const row = p.new as Comment;
-          setComments((prev) => (prev.find((c) => c.id === row.id) ? prev : [...prev, row]));
-        },
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [sessionId]);
-
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [comments.length]);
+  }, [initialComments.length]);
 
   const handleUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setUploading(true);
-    const supabase = createSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return setUploading(false);
-
-    const urls: string[] = [];
-    for (const file of Array.from(files)) {
-      const path = `${user.id}/${sessionId}/comment-${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage
-        .from("lesson-images")
-        .upload(path, file);
-      if (!error) {
-        const { data } = supabase.storage.from("lesson-images").getPublicUrl(path);
-        urls.push(data.publicUrl);
-      }
+    try {
+      const fd = new FormData();
+      fd.set("session_id", sessionId);
+      fd.set("prefix", "comment");
+      for (const f of Array.from(files)) fd.append("files", f);
+      const urls = await uploadLessonImagesAction(fd);
+      setImages((p) => [...p, ...urls]);
+    } finally {
+      setUploading(false);
     }
-    setImages((p) => [...p, ...urls]);
-    setUploading(false);
   };
 
   const handleSubmit = () => {
@@ -92,18 +60,19 @@ export function CommentThread({
       await addCommentAction(fd);
       setBody("");
       setImages([]);
+      router.refresh();
     });
   };
 
   return (
     <div className="rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
       <div className="max-h-[500px] space-y-3 overflow-y-auto p-4">
-        {comments.length === 0 ? (
+        {initialComments.length === 0 ? (
           <p className="py-8 text-center text-sm text-gray-400">
             아직 코멘트가 없어요. 궁금한 점이나 피드백을 남겨보세요.
           </p>
         ) : (
-          comments.map((c) => <CommentBubble key={c.id} comment={c} myRole={role} />)
+          initialComments.map((c) => <CommentBubble key={c.id} comment={c} myRole={role} />)
         )}
         <div ref={endRef} />
       </div>
