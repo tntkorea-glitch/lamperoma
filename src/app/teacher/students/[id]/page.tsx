@@ -79,11 +79,33 @@ export default async function StudentDetailPage({
         </form>
       ) : (
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{activeCourse.title}</h2>
-            <span className="text-xs text-gray-500">
-              총 {activeCourse.total_sessions}회차
-            </span>
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-semibold">{activeCourse.title}</h2>
+              <p className="text-xs text-gray-500">
+                총 {activeCourse.total_sessions}회차 · <StatusLabel status={activeCourse.status} />
+              </p>
+            </div>
+            <form action={updateCourseStatusAction} className="flex items-center gap-2">
+              <input type="hidden" name="course_id" value={activeCourse.id} />
+              <input type="hidden" name="student_id" value={student.id} />
+              <select
+                name="status"
+                defaultValue={activeCourse.status}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs"
+              >
+                <option value="active">진행중</option>
+                <option value="paused">일시중지</option>
+                <option value="completed">완료</option>
+                <option value="cancelled">취소</option>
+              </select>
+              <button
+                type="submit"
+                className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+              >
+                변경
+              </button>
+            </form>
           </div>
 
           <ul className="space-y-2">
