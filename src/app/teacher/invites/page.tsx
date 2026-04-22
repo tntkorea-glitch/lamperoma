@@ -49,62 +49,45 @@ export default async function InvitesPage() {
   );
 }
 
-function InviteRow({
-  invite,
-}: {
-  invite: {
-    id: string;
-    token: string;
-    name: string | null;
-    email: string | null;
-    phone: string | null;
-    expires_at: string;
-    used_at: string | null;
-  };
-}) {
+function InviteRow({ invite }: { invite: Invite }) {
   const isUsed = !!invite.used_at;
   const isExpired = new Date(invite.expires_at) < new Date();
 
   return (
-    <li className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900">
-              {invite.name ?? "(이름 미지정)"}
-            </span>
-            {isUsed && (
-              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
-                사용됨
+    <li>
+      <Link
+        href={`/teacher/invites/${invite.token}`}
+        className="block rounded-xl bg-white p-4 shadow-sm ring-1 ring-black/5 transition hover:ring-gray-300"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-gray-900">
+                {invite.name ?? "(이름 미지정)"}
               </span>
-            )}
-            {!isUsed && isExpired && (
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                만료
-              </span>
-            )}
-            {!isUsed && !isExpired && (
-              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
-                대기중
-              </span>
-            )}
+              {isUsed && (
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                  사용됨
+                </span>
+              )}
+              {!isUsed && isExpired && (
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                  만료
+                </span>
+              )}
+              {!isUsed && !isExpired && (
+                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+                  대기중
+                </span>
+              )}
+            </div>
+            <p className="truncate text-xs text-gray-500">
+              {invite.email ?? "-"} · {invite.phone ?? "-"}
+            </p>
           </div>
-          <p className="truncate text-xs text-gray-500">
-            {invite.email ?? "-"} · {invite.phone ?? "-"}
-          </p>
+          <span className="text-xs text-gray-400">›</span>
         </div>
-        {!isUsed && !isExpired && <CopyLinkButton token={invite.token} />}
-      </div>
+      </Link>
     </li>
-  );
-}
-
-function CopyLinkButton({ token }: { token: string }) {
-  return (
-    <form action={`/api/invites/${token}/copy`}>
-      <code className="block select-all rounded bg-gray-50 px-2 py-1 text-xs text-gray-600">
-        /invite/{token.slice(0, 8)}...
-      </code>
-    </form>
   );
 }
