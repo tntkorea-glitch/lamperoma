@@ -4,6 +4,7 @@ import { requireTeacher } from "@/lib/auth/getUser";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import type { CourseLinks } from "@/lib/courseLinks";
 
 const VALID_STATUS = new Set(["active", "paused", "completed", "cancelled"]);
 
@@ -27,6 +28,40 @@ export async function updateCourseStatusAction(formData: FormData) {
   revalidatePath(`/teacher/students/${studentId}`);
   revalidatePath(`/teacher`);
   revalidatePath(`/admin/courses`);
+}
+
+export async function updateCourseLinksAction(formData: FormData) {
+  const { teacherId } = await requireTeacher();
+  const courseId = formData.get("course_id") as string;
+  const studentId = formData.get("student_id") as string;
+
+  const keys: (keyof CourseLinks)[] = [
+    "consultation_form",
+    "course_design",
+    "application_form",
+    "oneday_instagram",
+    "oneday_photo",
+    "graduation_survey",
+    "model_practice",
+    "advanced_training",
+  ];
+
+  const links: CourseLinks = {};
+  for (const key of keys) {
+    const val = (formData.get(key) as string)?.trim();
+    if (val) links[key] = val;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase
+    .from("courses")
+    .update({ links })
+    .eq("id", courseId)
+    .eq("teacher_id", teacherId!);
+
+  if (error) throw error;
+
+  revalidatePath(`/teacher/students/${studentId}`);
 }
 
 export async function ensureCourseAction(formData: FormData) {

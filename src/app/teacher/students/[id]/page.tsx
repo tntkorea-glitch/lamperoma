@@ -2,7 +2,8 @@ import { requireTeacher } from "@/lib/auth/getUser";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ensureCourseAction, updateCourseStatusAction } from "./actions";
+import { ensureCourseAction, updateCourseStatusAction, updateCourseLinksAction } from "./actions";
+import { parseCourseLinks } from "@/lib/courseLinks";
 
 export default async function StudentDetailPage({
   params,
@@ -24,7 +25,7 @@ export default async function StudentDetailPage({
 
   const { data: courses } = await supabase
     .from("courses")
-    .select("id, title, total_sessions, status, course_sessions(id, session_no, status, scheduled_at, lesson_logs(id, title, published_at))")
+    .select("id, title, total_sessions, status, links, course_sessions(id, session_no, status, scheduled_at, lesson_logs(id, title, published_at))")
     .eq("student_id", id)
     .eq("teacher_id", teacherId!)
     .order("created_at", { ascending: false });
@@ -152,6 +153,63 @@ export default async function StudentDetailPage({
           </ul>
         </div>
       )}
+
+      {activeCourse && (
+        <CourseLinkEditor
+          courseId={activeCourse.id}
+          studentId={student.id}
+          links={parseCourseLinks(activeCourse.links)}
+        />
+      )}
+    </div>
+  );
+}
+
+function CourseLinkEditor({
+  courseId,
+  studentId,
+  links,
+}: {
+  courseId: string;
+  studentId: string;
+  links: ReturnType<typeof parseCourseLinks>;
+}) {
+  const fields = [
+    { key: "consultation_form", label: "수강 상담 설문지" },
+    { key: "course_design", label: "수강 설계" },
+    { key: "application_form", label: "수강 신청서" },
+    { key: "oneday_instagram", label: "인스타그램 원데이 클래스" },
+    { key: "oneday_photo", label: "사진/영상 원데이 클래스" },
+    { key: "graduation_survey", label: "졸업 설문지" },
+    { key: "model_practice", label: "졸업 후 모델 실습" },
+    { key: "advanced_training", label: "보수 교육" },
+  ] as const;
+
+  return (
+    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+      <h2 className="mb-4 text-lg font-semibold">수강생 링크 설정</h2>
+      <form action={updateCourseLinksAction} className="space-y-3">
+        <input type="hidden" name="course_id" value={courseId} />
+        <input type="hidden" name="student_id" value={studentId} />
+        {fields.map(({ key, label }) => (
+          <label key={key} className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-600">{label}</span>
+            <input
+              name={key}
+              type="url"
+              defaultValue={(links as Record<string, string | undefined>)[key] ?? ""}
+              placeholder="https://..."
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+            />
+          </label>
+        ))}
+        <button
+          type="submit"
+          className="mt-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700"
+        >
+          링크 저장
+        </button>
+      </form>
     </div>
   );
 }
