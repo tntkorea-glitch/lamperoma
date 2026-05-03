@@ -1,5 +1,6 @@
 import { requireStudent } from "@/lib/auth/getUser";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { DdayCounter } from "@/components/DdayCounter";
 import Link from "next/link";
 
 export default async function StudentDashboard() {
@@ -9,7 +10,7 @@ export default async function StudentDashboard() {
   const { data: courses } = await supabase
     .from("courses")
     .select(
-      "id, title, total_sessions, status, started_at, teacher:teachers(name, salon_name, email, phone), course_sessions(id, session_no, status, lesson_logs(id, title, published_at, updated_at))",
+      "id, title, total_sessions, status, started_at, created_at, teacher:teachers(name, salon_name, email, phone), course_sessions(id, session_no, status, lesson_logs(id, title, published_at, updated_at))",
     )
     .eq("student_id", studentId!)
     .order("created_at", { ascending: false });
@@ -32,8 +33,12 @@ export default async function StudentDashboard() {
     (activeCourse.course_sessions ?? []).map((s) => [s.session_no, s]),
   );
 
+  const ddayStart = activeCourse.started_at ?? activeCourse.created_at;
+
   return (
     <div className="space-y-6">
+      <DdayCounter startDate={ddayStart} />
+
       <div>
         <p className="text-xs text-gray-500">
           {teacher?.salon_name ?? teacher?.name ?? "원장"}
