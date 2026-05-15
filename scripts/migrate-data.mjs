@@ -1,8 +1,8 @@
 import pg from 'pg';
 const { Client } = pg;
 
-const OLD_DB = 'postgresql://postgres:gkdl2486%24%24%24@db.ifzllqbefmecrbpwibiu.supabase.co:5432/postgres';
-const NEW_DB = 'postgresql://postgres:gkdl2486%24%24%24@db.wrwaltyqxtczwzfjnkbj.supabase.co:5432/postgres';
+const OLD_DB = { host: 'aws-1-ap-northeast-2.pooler.supabase.com', port: 5432, database: 'postgres', user: 'postgres.ifzllqbefmecrbpwibiu', password: 'gkdl2486$$$', ssl: { rejectUnauthorized: false } };
+const NEW_DB = { host: 'aws-1-ap-northeast-2.pooler.supabase.com', port: 5432, database: 'postgres', user: 'postgres.wrwaltyqxtczwzfjnkbj', password: 'gkdl2486$$$', ssl: { rejectUnauthorized: false } };
 
 const PUBLIC_TABLES = [
   'teachers',
@@ -19,8 +19,8 @@ const PUBLIC_TABLES = [
 ];
 
 async function migrate() {
-  const src = new Client({ connectionString: OLD_DB, ssl: { rejectUnauthorized: false } });
-  const dst = new Client({ connectionString: NEW_DB, ssl: { rejectUnauthorized: false } });
+  const src = new Client(OLD_DB);
+  const dst = new Client(NEW_DB);
 
   await src.connect();
   await dst.connect();
