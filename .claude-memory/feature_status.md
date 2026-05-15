@@ -26,6 +26,14 @@ originSessionId: 6cc64c39-d23f-473c-a27e-fa0de549ce20
 - **실사용자 테스트**: 아직 실제 원장·수강생 투입 안 함
 - **세부 UX**: 일지 템플릿 `topics[]` 입력 UI 없음, 과정 전환 이력/로그 없음
 
+## ✅ 추가 완료 (2026-05-15)
+- **Supabase 이관**: 구 프로젝트(ifzllqbefmecrbpwibiu) → 신 프로젝트(wrwaltyqxtczwzfjnkbj) 완료
+- **데이터 이관**: auth.users 5명 + identities + 전체 public 테이블 pg 기반 이관
+- **UUID 교정**: tntkorea 계정 OLD UUID → NEW UUID 교정 (teachers/courses/invites/admins)
+- **Vercel 환경변수 재등록**: BOM/CRLF 이슈 해결 후 `a01041789049-s-projects/lamperoma`에 11개 등록
+- **push-env.mjs**: BOM 없이 env var 업로드하는 스크립트 (`scripts/push-env.mjs`)
+- **배포**: https://lamperoma-gilt.vercel.app (a01041789049-s-projects 계정)
+
 ## ✅ 추가 완료 (2026-05-04)
 - **D-day 카운터**: 수강생 대시보드 상단, 시작 전 음수/시작 후 양수 자동 처리
 - **수강일지 섹션 재구성**: "[이름]님의 수강 일지" 헤더, 수강 상담/설계/신청서 링크 버튼, 원데이 클래스 안내, 수강 종료 섹션
