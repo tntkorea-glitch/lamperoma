@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # Vercel 환경변수 일괄 등록 스크립트
 # 사용법: bash push-env.sh
 # 새 Supabase 프로젝트 이관 시 .env.local 수정 후 실행
@@ -7,13 +7,10 @@ set -e
 
 echo "=== lamperoma Vercel 환경변수 등록 ==="
 
-# .env.local 읽어서 vercel env add
 while IFS='=' read -r key value; do
-  # 빈 줄, 주석 스킵
   [[ -z "$key" || "$key" == \#* ]] && continue
-  # 값에 붙은 인라인 주석 제거
   value="${value%%#*}"
-  value="${value%"${value##*[![:space:]]}"}"  # trim trailing space
+  value="${value%"${value##*[![:space:]]}"}"
 
   echo "  → $key"
   echo "$value" | vercel env add "$key" production --force 2>/dev/null || \
